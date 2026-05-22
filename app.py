@@ -360,14 +360,14 @@ def render_flashcard(card: dict):
     </div>
   </div>
 </div>
-<button class="flip-btn" onclick="flip()">🔄 พลิกการ์ด</button>
+<!-- <button class="flip-btn" onclick="flip()">🔄 พลิกการ์ด</button> -->
 <script>
   const fc = document.getElementById('fc');
   fc.addEventListener('click', flip);
   function flip(){{ fc.classList.toggle('flipped'); }}
 </script>
 </body>
-</html>""", height=300, scrolling=False)
+</html>""", height=290, scrolling=False)
 
 # ══════════════════════════════════════════════════════════════
 # 5. HEADER
