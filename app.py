@@ -1,11 +1,3 @@
-"""
-flashcard_offline.py
-────────────────────────────────────────────────────────────────
-แอพ Flashcard แบบ Offline ไม่ใช้ AI เลย
-ดึงคำจาก oxford_db.json โดยตรง
-วิธีรัน: streamlit run flashcard_offline.py
-"""
-
 import streamlit as st
 import streamlit.components.v1 as components
 import json
@@ -16,7 +8,7 @@ import random
 # 1. CONFIG & SESSION STATE
 # ══════════════════════════════════════════════════════════════
 st.set_page_config(
-    page_title="Oxford Flashcards (Offline)",
+    page_title="Oxford Flashcards",
     page_icon="📇",
     layout="centered"
 )
@@ -39,7 +31,7 @@ for k, v in DEFAULTS.items():
 # ══════════════════════════════════════════════════════════════
 @st.cache_data
 def load_db() -> dict:
-    path = os.path.join(os.path.dirname(__file__), "oxford_db.json")
+    path = os.path.join(os.path.dirname(__file__), "oxford_db_enriched.json")
     if os.path.exists(path):
         with open(path, "r", encoding="utf-8") as f:
             return json.load(f)
@@ -382,7 +374,7 @@ def render_flashcard(card: dict):
 # ══════════════════════════════════════════════════════════════
 st.markdown('<div class="title-bar"></div>', unsafe_allow_html=True)
 st.markdown('<p class="app-title">Oxford Flashcards</p>', unsafe_allow_html=True)
-st.markdown('<p class="app-sub">Offline · Oxford 5000 · ไม่ต้องใช้อินเทอร์เน็ต</p>', unsafe_allow_html=True)
+st.markdown('<p class="app-sub">Offline · Oxford 5000 · </p>', unsafe_allow_html=True)
 
 if not DB_OK:
     st.error("❌ ไม่พบ oxford_db.json — วางไฟล์ไว้ในโฟลเดอร์เดียวกับ flashcard_offline.py")
@@ -447,7 +439,7 @@ st.markdown("---")
 cards = st.session_state.get("cards", [])
 
 if not cards:
-    st.info("👆 กด **สุ่มการ์ดใหม่** เพื่อเริ่มเรียน")
+    st.info("👆สุ่มการ์ดใหม่")
     st.stop()
 
 mode = st.session_state["flash_mode"]
