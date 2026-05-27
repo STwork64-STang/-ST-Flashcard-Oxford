@@ -3,6 +3,7 @@ import streamlit.components.v1 as components
 import json
 import os
 import random
+from reading_db import STORIES
 
 # ══════════════════════════════════════════════════════════════
 # 1. CONFIG & SESSION STATE
@@ -21,6 +22,13 @@ DEFAULTS = {
     "flash_score": 0,
     "flash_status": None,
     "cards": [],
+    
+    "read_story_idx": 0,
+    "read_q_idx": 0,
+    "read_score": 0,
+    "read_status": None,   # None | "correct" | "wrong"
+    "read_mode": "read",   # "read" | "quiz"
+    "read_answers": {},    # {q_idx: chosen_option}
 }
 for k, v in DEFAULTS.items():
     if k not in st.session_state:
@@ -419,6 +427,10 @@ with col_m2:
     if st.button("🎮 โหมดควิซ", use_container_width=True):
         st.session_state["flash_mode"] = "quiz"
         st.rerun()
+with col_m3:
+    if st.button("📚 อ่านเรื่องสั้น", use_container_width=True):
+        st.session_state["flash_mode"] = "reading"
+        st.rerun()
 with col_draw:
     if st.button("🎲 สุ่มการ์ดใหม่", use_container_width=True, type="primary"):
         cards = pick_cards(st.session_state["user_level"], n_cards)
@@ -636,4 +648,273 @@ elif mode == "quiz":
             if "current_options" in st.session_state:
                 del st.session_state["current_options"]
             st.rerun()
+
+# ══════════════════════════════════════════════════════════════
+# FULL READING MODE CODE — วางต่อท้าย elif mode == "quiz": block
+# ══════════════════════════════════════════════════════════════
+ 
+# ── READING MODE ──────────────────────────────────────────────
+elif mode == "reading":
+    from reading_db import STORIES
+ 
+    # ── Story selector ──────────────────────────────────────────
+    st.markdown("#### 📚 ฝึกอ่านเรื่องสั้น")
+ 
+    story_labels = [f"{s['emoji']} {s['title']} ({s['topic']})" for s in STORIES]
+    sel = st.selectbox(
+        "เลือกเรื่องที่อยากอ่าน",
+        story_labels,
+        index=st.session_state.get("read_story_idx", 0),
+        key="story_sel"
+    )
+    sel_idx = story_labels.index(sel)
+    if sel_idx != st.session_state.get("read_story_idx", 0):
+        st.session_state["read_story_idx"] = sel_idx
+        st.session_state["read_mode"]      = "read"
+        st.session_state["read_q_idx"]     = 0
+        st.session_state["read_score"]     = 0
+        st.session_state["read_status"]    = None
+        st.session_state["read_answers"]   = {}
+        st.rerun()
+ 
+    story = STORIES[sel_idx]
+ 
+    # ── Sub-mode toggle ─────────────────────────────────────────
+    col_r1, col_r2 = st.columns(2)
+    with col_r1:
+        if st.button("📖 อ่านเรื่อง", use_container_width=True):
+            st.session_state["read_mode"] = "read"
+            st.rerun()
+    with col_r2:
+        if st.button("📝 ทำแบบทดสอบ", use_container_width=True):
+            st.session_state["read_mode"] = "quiz"
+            st.session_state["read_q_idx"]   = 0
+            st.session_state["read_score"]   = 0
+            st.session_state["read_status"]  = None
+            st.session_state["read_answers"] = {}
+            st.rerun()
+ 
+    st.markdown("---")
+    read_sub = st.session_state.get("read_mode", "read")
+ 
+    # ════════════════════════════════════════════════════════════
+    # SUB-MODE: READ
+    # ════════════════════════════════════════════════════════════
+    if read_sub == "read":
+        # Story card
+        st.markdown(f"""
+        <div style="background:linear-gradient(135deg,#3A2E1E,#4A3C26);
+                    border-radius:16px;padding:1.25rem 1.75rem;margin-bottom:1rem;">
+            <div style="font-size:0.6rem;font-weight:700;letter-spacing:0.12em;
+                        text-transform:uppercase;color:#E8B855;opacity:0.7;margin-bottom:4px;">
+                {story['level']} · {story['topic']}
+            </div>
+            <div style="font-family:'Fraunces',serif;font-size:1.5rem;color:#C8922A;
+                        letter-spacing:-0.02em;line-height:1.2;">
+                {story['emoji']} {story['title']}
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
+ 
+        # English text
+        st.markdown(
+            "<div style='font-size:0.7rem;font-weight:700;letter-spacing:0.1em;"
+            "text-transform:uppercase;color:#9E8E78;margin-bottom:6px;'>"
+            "📄 English Text</div>",
+            unsafe_allow_html=True
+        )
+        st.markdown(f"""
+        <div style="background:#FBF8F2;border:1.5px solid #DDD5C4;border-radius:14px;
+                    padding:1.5rem;font-family:'Source Serif 4',serif;font-size:1rem;
+                    line-height:1.85;color:#1E1810;margin-bottom:1rem;">
+            {story['text']}
+        </div>
+        """, unsafe_allow_html=True)
+ 
+        # Thai translation (collapsible)
+        with st.expander("🇹🇭 ดูคำแปลภาษาไทย"):
+            st.markdown(f"""
+            <div style="background:#FDF4E0;border:1px solid #DDD5C4;border-radius:12px;
+                        padding:1.25rem;font-size:0.92rem;color:#4A3C26;line-height:1.8;">
+                {story['thai']}
+            </div>
+            """, unsafe_allow_html=True)
+ 
+        st.markdown("<br>", unsafe_allow_html=True)
+        st.info(f"📝 เรื่องนี้มี **{len(story['questions'])} ข้อ** — กด **ทำแบบทดสอบ** ด้านบนเพื่อทดสอบความเข้าใจ")
+ 
+    # ════════════════════════════════════════════════════════════
+    # SUB-MODE: QUIZ
+    # ════════════════════════════════════════════════════════════
+    elif read_sub == "quiz":
+        questions  = story["questions"]
+        q_idx      = st.session_state.get("read_q_idx", 0)
+        score      = st.session_state.get("read_score", 0)
+        answers    = st.session_state.get("read_answers", {})
+ 
+        # ── All done ──────────────────────────────────────────
+        if q_idx >= len(questions):
+            pct = int(score / len(questions) * 100)
+            if pct == 100:
+                st.balloons()
+                grade_msg  = "🏆 ยอดเยี่ยม! ได้คะแนนเต็ม!"
+                grade_color = "#1C4A1E"
+                grade_bg    = "#EFF7EE"
+                grade_bd    = "#A8C9A0"
+            elif pct >= 75:
+                grade_msg  = "👍 เก่งมาก! ความเข้าใจดีมาก"
+                grade_color = "#3A2E1E"
+                grade_bg    = "#FDF4E0"
+                grade_bd    = "#C8922A"
+            elif pct >= 50:
+                grade_msg  = "📖 พอใช้ได้ ลองอ่านอีกครั้งนะ"
+                grade_color = "#3A2E1E"
+                grade_bg    = "#FBF8F2"
+                grade_bd    = "#DDD5C4"
+            else:
+                grade_msg  = "💪 ยังต้องฝึกอีกนิด ลองอ่านแล้วทำใหม่นะ"
+                grade_color = "#5A1A18"
+                grade_bg    = "#FBF0EE"
+                grade_bd    = "#E0A8A0"
+ 
+            st.markdown(f"""
+            <div style="background:{grade_bg};border:1px solid {grade_bd};
+                        border-radius:16px;padding:2rem;text-align:center;margin-bottom:1.5rem;">
+                <div style="font-family:'Fraunces',serif;font-size:1.75rem;
+                            color:{grade_color};margin-bottom:0.5rem;">{grade_msg}</div>
+                <div style="font-size:2.5rem;font-weight:700;color:#C8922A;">{score}/{len(questions)}</div>
+                <div style="font-size:1rem;color:{grade_color};opacity:0.8;">{pct}% ถูกต้อง</div>
+            </div>
+            """, unsafe_allow_html=True)
+ 
+            # Review answers
+            st.markdown("#### 📋 เฉลยข้อสอบ")
+            for i, q in enumerate(questions):
+                chosen  = answers.get(i, "—")
+                correct = q["answer"]
+                is_ok   = chosen == correct
+                icon    = "✅" if is_ok else "❌"
+                bg      = "#EFF7EE" if is_ok else "#FBF0EE"
+                bd      = "#A8C9A0" if is_ok else "#E0A8A0"
+                st.markdown(f"""
+                <div style="background:{bg};border:1px solid {bd};border-radius:12px;
+                            padding:1rem 1.25rem;margin-bottom:0.75rem;">
+                    <div style="font-size:0.85rem;font-weight:600;margin-bottom:4px;">
+                        {icon} ข้อ {i+1}: {q['q']}
+                    </div>
+                    <div style="font-size:0.82rem;color:#1E1810;">
+                        คำตอบของคุณ: <strong>{chosen}</strong>
+                    </div>
+                    {"" if is_ok else f'<div style="font-size:0.82rem;color:#1C4A1E;">เฉลย: <strong>{correct}</strong></div>'}
+                    <div style="font-size:0.78rem;color:#6B5E4A;margin-top:4px;font-style:italic;">
+                        💡 {q['explanation']}
+                    </div>
+                </div>
+                """, unsafe_allow_html=True)
+ 
+            col_retry, col_read = st.columns(2)
+            with col_retry:
+                if st.button("🔄 ทำใหม่อีกครั้ง", use_container_width=True):
+                    st.session_state["read_q_idx"]   = 0
+                    st.session_state["read_score"]   = 0
+                    st.session_state["read_status"]  = None
+                    st.session_state["read_answers"] = {}
+                    st.rerun()
+            with col_read:
+                if st.button("📖 กลับไปอ่านเรื่อง", use_container_width=True):
+                    st.session_state["read_mode"] = "read"
+                    st.rerun()
+            st.stop()
+ 
+        # ── Current question ──────────────────────────────────
+        q       = questions[q_idx]
+        locked  = st.session_state.get("read_status") is not None
+ 
+        # Progress
+        st.markdown(
+            f"<p style='font-size:0.82rem;color:#9E8E78;font-weight:500;"
+            f"margin-bottom:4px;font-family:sans-serif;'>"
+            f"ข้อ {q_idx+1} / {len(questions)} · คะแนน: {score}</p>",
+            unsafe_allow_html=True
+        )
+        st.progress((q_idx) / len(questions))
+ 
+        # Story title reminder
+        st.markdown(f"""
+        <div style="background:linear-gradient(135deg,#3A2E1E,#4A3C26);
+                    border-radius:12px;padding:0.75rem 1.25rem;margin-bottom:0.75rem;">
+            <div style="font-size:0.7rem;color:#E8B855;opacity:0.8;">
+                {story['emoji']} {story['title']}
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
+ 
+        # Question box
+        st.markdown(f"""
+        <div style="background:#FBF8F2;border:1.5px solid #DDD5C4;border-radius:14px;
+                    padding:1.25rem 1.5rem;margin-bottom:1rem;">
+            <div style="font-size:0.6rem;font-weight:700;letter-spacing:0.1em;
+                        text-transform:uppercase;color:#9E8E78;margin-bottom:8px;">
+                คำถามที่ {q_idx+1}
+            </div>
+            <div style="font-family:'Source Serif 4',serif;font-size:1.05rem;
+                        color:#1E1810;line-height:1.6;">
+                {q['q']}
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
+ 
+        # Options
+        user_choice = None
+        col1, col2 = st.columns(2)
+        col3, col4 = st.columns(2)
+        for i, col in enumerate([col1, col2, col3, col4]):
+            with col:
+                if st.button(
+                    q["options"][i],
+                    key=f"rq_{sel_idx}_{q_idx}_{i}",
+                    use_container_width=True,
+                    disabled=locked
+                ):
+                    user_choice = q["options"][i]
+ 
+        # Process answer
+        if user_choice:
+            st.session_state["read_answers"][q_idx] = user_choice
+            if user_choice == q["answer"]:
+                st.session_state["read_status"] = "correct"
+                st.session_state["read_score"] += 1
+            else:
+                st.session_state["read_status"] = "wrong"
+                st.session_state["read_answers"][q_idx] = user_choice
+            st.rerun()
+ 
+        # Feedback
+        status = st.session_state.get("read_status")
+ 
+        if status == "correct":
+            st.markdown(f"""
+            <div class="result-correct">
+                🎉 <strong>ถูกต้อง!</strong><br>
+                <em style="opacity:0.8;">💡 {q['explanation']}</em>
+            </div>""", unsafe_allow_html=True)
+            st.markdown("<br>", unsafe_allow_html=True)
+            if st.button("ข้อถัดไป ➡️", key=f"rq_next_c_{q_idx}", use_container_width=True):
+                st.session_state["read_q_idx"]  = q_idx + 1
+                st.session_state["read_status"] = None
+                st.rerun()
+ 
+        elif status == "wrong":
+            chosen = st.session_state["read_answers"].get(q_idx, "—")
+            st.markdown(f"""
+            <div class="result-wrong">
+                ❌ <strong>ยังไม่ถูก</strong> — คำตอบที่ถูกต้องคือ <strong>{q['answer']}</strong><br>
+                คุณเลือก: {chosen}<br>
+                <em style="opacity:0.8;">💡 {q['explanation']}</em>
+            </div>""", unsafe_allow_html=True)
+            st.markdown("<br>", unsafe_allow_html=True)
+            if st.button("ข้อถัดไป ➡️", key=f"rq_next_w_{q_idx}", use_container_width=True):
+                st.session_state["read_q_idx"]  = q_idx + 1
+                st.session_state["read_status"] = None
+                st.rerun()
             
