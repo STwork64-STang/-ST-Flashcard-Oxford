@@ -419,6 +419,7 @@ st.caption(f"📦 Oxford DB พร้อมใช้ · ระดับนี้
 # 7. MODE SELECTOR + DRAW BUTTON
 # ══════════════════════════════════════════════════════════════
 col_m1, col_m2, col_draw = st.columns([2, 2, 2])
+col_m3 = st.columns(1)[0]
 with col_m1:
     if st.button("📖 โหมดเรียนรู้", use_container_width=True):
         st.session_state["flash_mode"] = "study"
