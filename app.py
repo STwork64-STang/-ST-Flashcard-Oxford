@@ -352,7 +352,7 @@ div[data-testid="stRadio"] [role="radiogroup"] {
 }
 
 div[data-testid="stRadio"] label {
-    flex: 1 1 50% !important;
+    flex: 1 !important;
 }
 
 
