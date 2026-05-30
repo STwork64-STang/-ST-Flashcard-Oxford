@@ -656,9 +656,9 @@ with tab_flash:
     )
 
     # ── Action row ────────────────────────────────────────────
-    st.markdown('<div class="action-row">', unsafe_allow_html=True)
-    col_toggle, col_draw = st.columns([1, 1])
-    with col_toggle:
+    #st.markdown('<div class="action-row">', unsafe_allow_html=True)
+    #col_toggle, col_draw = st.columns([1, 1])
+    #with col_toggle:
         mode_choice = st.radio(
             "โหมดจำคำศัพท์",
             options=["📖 เรียนรู้", "🎮 ควิซ"],
