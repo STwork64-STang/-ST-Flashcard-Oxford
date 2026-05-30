@@ -11,7 +11,8 @@ from reading_db import STORIES
 st.set_page_config(
     page_title="Oxford Flashcards",
     page_icon="📇",
-    layout="centered"
+    #layout="centered"
+    layout="wide"
 )
 
 DEFAULTS = {
