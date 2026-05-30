@@ -657,7 +657,7 @@ with tab_flash:
 
     # ── Action row ────────────────────────────────────────────
     st.markdown('<div class="action-row">', unsafe_allow_html=True)
-    col_toggle, col_draw = st.columns([2, 2])
+    col_toggle, col_draw = st.columns([1, 2])
     with col_toggle:
         mode_choice = st.radio(
             "โหมดการจำคำศัพท์",
