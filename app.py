@@ -688,31 +688,31 @@ with tab_flash:
     # ── Action row ────────────────────────────────────────────
     st.markdown('<div class="action-row">', unsafe_allow_html=True)
 
-        mode_choice = st.radio(
-            "โหมด",
-            options=["📖 เรียนรู้", "🎮 ควิซ"],
-            index=0 if st.session_state["flash_mode"] == "study" else 1,
-            horizontal=True,
-            label_visibility="collapsed",
-            key="mode_radio"
-        )
-        new_mode = "study" if "เรียนรู้" in mode_choice else "quiz"
-        if new_mode != st.session_state["flash_mode"]:
-            st.session_state["flash_mode"] = new_mode
-            st.rerun()
+    mode_choice = st.radio(
+        "โหมด",
+        options=["📖 เรียนรู้", "🎮 ควิซ"],
+        index=0 if st.session_state["flash_mode"] == "study" else 1,
+        horizontal=True,
+        label_visibility="collapsed",
+        key="mode_radio"
+    )
+    new_mode = "study" if "เรียนรู้" in mode_choice else "quiz"
+    if new_mode != st.session_state["flash_mode"]:
+        st.session_state["flash_mode"] = new_mode
+        st.rerun()
 
-        if st.button("🎲 สุ่มการ์ดใหม่", use_container_width=True, type="primary"):
-            cards_new = pick_cards(st.session_state["user_level"], n_cards)
-            st.session_state.update({
-                "cards":        cards_new,
-                "study_idx":    0,
-                "card_idx":     0,
-                "flash_score":  0,
-                "flash_status": None,
-            })
-            if "current_options" in st.session_state:
-                del st.session_state["current_options"]
-            st.rerun()
+    if st.button("🎲 สุ่มการ์ดใหม่", use_container_width=True, type="primary"):
+        cards_new = pick_cards(st.session_state["user_level"], n_cards)
+        st.session_state.update({
+            "cards":        cards_new,
+            "study_idx":    0,
+            "card_idx":     0,
+            "flash_score":  0,
+            "flash_status": None,
+        })
+        if "current_options" in st.session_state:
+            del st.session_state["current_options"]
+        st.rerun()
     st.markdown('</div>', unsafe_allow_html=True)
 
     st.markdown('<div class="section-divider"></div>', unsafe_allow_html=True)
