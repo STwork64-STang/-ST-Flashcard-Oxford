@@ -360,7 +360,7 @@ div[data-testid="stRadio"] label {
     border-radius: 6px !important;
     border: none !important;
     background: transparent !important;
-    color: var(--ink-faint) !important;
+    color: var(--spine) !important;
     font-family: 'Source Sans 3', sans-serif !important;
     font-size: .85rem !important;
     font-weight: 500 !important;
@@ -373,14 +373,9 @@ div[data-testid="stRadio"] label {
     white-space: nowrap !important;
     min-height: 30px !important;
 }
-/* div[data-testid="stRadio"] label:hover {
+div[data-testid="stRadio"] label:hover {
     background: var(--amber-bg) !important;
     color: var(--amber-dk) !important; 
-}*/
-
-div[data-testid="stRadio"] label:has(input:checked) p,
-div[data-testid="stRadio"] label:has(input:checked) span {
-    color: var(--spine) !important;
 }
 
 /* selected state */
