@@ -373,6 +373,16 @@ div[data-testid="stRadio"] label {
     white-space: nowrap !important;
     min-height: 30px !important;
 }
+div[data-testid="stRadio"] label p,
+div[data-testid="stRadio"] label span,
+div[data-testid="stRadio"] label div {
+    color: #241C0E !important;
+    font-weight: 600 !important;
+}
+
+
+
+
 div[data-testid="stRadio"] label:hover {
     background: var(--amber-bg) !important;
     color: var(--amber-dk) !important; 
@@ -658,7 +668,7 @@ with tab_flash:
 
     # ── Action row ────────────────────────────────────────────
     st.markdown('<div class="action-row">', unsafe_allow_html=True)
-    col_toggle, col_draw = st.columns([3, 2])
+    col_toggle, col_draw = st.columns([3, 1])
     with col_toggle:
         mode_choice = st.radio(
             "โหมด",
