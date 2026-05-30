@@ -133,7 +133,7 @@ st.markdown("""
 .block-container {
     padding-top: 2.25rem !important;
     padding-bottom: 5rem !important;
-    max-width: 100% !important;
+    max-width: 1400px !important;
 }
 
 /* ── Typography ── */
