@@ -133,7 +133,7 @@ st.markdown("""
 .block-container {
     padding-top: 2.25rem !important;
     padding-bottom: 5rem !important;
-/*    max-width: 680px !important; */
+    max-width: 100% !important;
 }
 
 /* ── Typography ── */
@@ -337,6 +337,27 @@ div[data-testid="stRadio"] {
     margin-bottom: 0 !important;
     /* same visual height as button: button has 8px top+bottom pad + font ~1.25rem = ~36px total */
 }
+
+
+
+
+div[data-testid="stRadio"] {
+    width: 100% !important;
+}
+
+div[data-testid="stRadio"] [role="radiogroup"] {
+    width: 100% !important;
+    display: flex !important;
+}
+
+div[data-testid="stRadio"] label {
+    flex: 1 1 50% !important;
+}
+
+
+
+
+
 /* hide the label above */
 div[data-testid="stRadio"] > div:first-child { display: none !important; }
 
@@ -664,7 +685,7 @@ with tab_flash:
     )
 
     # ── Action row ────────────────────────────────────────────
-    #st.markdown('<div class="action-row">', unsafe_allow_html=True)
+    st.markdown('<div class="action-row">', unsafe_allow_html=True)
     col_toggle, col_draw = st.columns([3, 1])
     with col_toggle:
         mode_choice = st.radio(
