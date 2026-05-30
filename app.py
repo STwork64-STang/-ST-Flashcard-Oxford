@@ -266,6 +266,48 @@ h4 { font-size: 1.25rem !important; font-weight: 600 !important; margin-bottom: 
     box-shadow: 0 4px 14px rgba(160,104,26,.32) !important;
 }
 
+/* ── Mode segmented control ── */
+.mode-toggle {
+    display: flex;
+    background: var(--page-alt);
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    padding: 4px;
+    gap: 3px;
+    margin-bottom: .25rem;
+}
+.mode-btn {
+    flex: 1;
+    padding: 8px 12px;
+    border-radius: 7px;
+    border: none;
+    background: transparent;
+    color: var(--ink-faint);
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: .85rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all .18s ease;
+    text-align: center;
+    white-space: nowrap;
+}
+.mode-btn:hover {
+    background: var(--amber-bg);
+    color: var(--amber-dk);
+}
+.mode-btn.active {
+    background: var(--page);
+    color: var(--spine);
+    font-weight: 600;
+    box-shadow: 0 1px 4px rgba(36,28,14,.12), 0 0 0 1px var(--border);
+}
+.mode-btn.active-quiz {
+    background: var(--spine);
+    color: #F5EDD8;
+    font-weight: 600;
+    box-shadow: 0 2px 8px rgba(36,28,14,.2);
+}
+
 /* ── Selectbox ── */
 .stSelectbox [data-baseweb="select"] > div:first-child {
     border-radius: var(--radius-sm) !important;
@@ -284,6 +326,65 @@ h4 { font-size: 1.25rem !important; font-weight: 600 !important; margin-bottom: 
     color: var(--ink) !important;
 }
 [role="option"]:hover { background: var(--amber-bg) !important; }
+
+/* ── Radio as segmented control ── */
+div[data-testid="stRadio"] {
+    background: var(--page-alt);
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    padding: 4px !important;
+    display: flex;
+}
+div[data-testid="stRadio"] > label { display: none; }
+div[data-testid="stRadio"] [data-testid="stRadioGroup"] {
+    display: flex !important;
+    flex-direction: row !important;
+    gap: 3px !important;
+    width: 100%;
+}
+div[data-testid="stRadio"] label[data-testid="stWidgetLabel"] { display: none !important; }
+div[data-testid="stRadio"] [role="radiogroup"] {
+    display: flex !important;
+    flex-direction: row !important;
+    gap: 3px !important;
+    width: 100%;
+}
+div[data-testid="stRadio"] [role="radio"] {
+    display: none !important;
+}
+div[data-testid="stRadio"] label {
+    flex: 1 !important;
+    padding: 7px 10px !important;
+    border-radius: 7px !important;
+    border: none !important;
+    background: transparent !important;
+    color: var(--ink-faint) !important;
+    font-family: 'Source Sans 3', sans-serif !important;
+    font-size: .85rem !important;
+    font-weight: 500 !important;
+    cursor: pointer !important;
+    transition: all .18s ease !important;
+    text-align: center !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+div[data-testid="stRadio"] label:has([aria-checked="true"]),
+div[data-testid="stRadio"] label:has(input:checked) {
+    background: var(--page) !important;
+    color: var(--spine) !important;
+    font-weight: 600 !important;
+    box-shadow: 0 1px 4px rgba(36,28,14,.12), 0 0 0 1px var(--border) !important;
+}
+div[data-testid="stRadio"] label:hover {
+    background: var(--amber-bg) !important;
+    color: var(--amber-dk) !important;
+}
+/* Hide the radio dot */
+div[data-testid="stRadio"] [data-testid="stMarkdownContainer"] p {
+    font-size: .85rem !important;
+    line-height: 1 !important;
+}
 
 /* ── Section divider ── */
 .section-divider {
@@ -541,15 +642,23 @@ with tab_flash:
     )
 
     # ── Action row ────────────────────────────────────────────
-    col_m1, col_m2, col_draw = st.columns([1, 1, 1])
-    with col_m1:
-        if st.button("📖 โหมดเรียนรู้", use_container_width=True):
-            st.session_state["flash_mode"] = "study"
+    col_toggle, col_draw = st.columns([2, 1])
+
+    with col_toggle:
+        # Segmented control — st.radio horizontal
+        mode_choice = st.radio(
+            "โหมด",
+            options=["📖 เรียนรู้", "🎮 ควิซ"],
+            index=0 if st.session_state["flash_mode"] == "study" else 1,
+            horizontal=True,
+            label_visibility="collapsed",
+            key="mode_radio"
+        )
+        new_mode = "study" if "เรียนรู้" in mode_choice else "quiz"
+        if new_mode != st.session_state["flash_mode"]:
+            st.session_state["flash_mode"] = new_mode
             st.rerun()
-    with col_m2:
-        if st.button("🎮 โหมดควิซ", use_container_width=True):
-            st.session_state["flash_mode"] = "quiz"
-            st.rerun()
+
     with col_draw:
         if st.button("🎲 สุ่มการ์ดใหม่", use_container_width=True, type="primary"):
             cards_new = pick_cards(st.session_state["user_level"], n_cards)
