@@ -687,7 +687,7 @@ with tab_flash:
 
     # ── Action row ────────────────────────────────────────────
     st.markdown('<div class="action-row">', unsafe_allow_html=True)
-    col_toggle, col_draw = st.columns([3, 1])
+    col_toggle, col_draw = st.columns([8, 1])
     with col_toggle:
         mode_choice = st.radio(
             "โหมด",
