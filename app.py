@@ -657,10 +657,10 @@ with tab_flash:
 
     # ── Action row ────────────────────────────────────────────
     st.markdown('<div class="action-row">', unsafe_allow_html=True)
-    col_toggle, col_draw = st.columns([3, 2])
+    col_toggle, col_draw = st.columns([2, 2])
     with col_toggle:
         mode_choice = st.radio(
-            "โหมด",
+            "โหมดการจำคำศัพท์",
             options=["📖 เรียนรู้", "🎮 ควิซ"],
             index=0 if st.session_state["flash_mode"] == "study" else 1,
             horizontal=True,
