@@ -380,9 +380,6 @@ div[data-testid="stRadio"] label div {
     font-weight: 600 !important;
 }
 
-
-
-
 div[data-testid="stRadio"] label:hover {
     background: var(--amber-bg) !important;
     color: var(--amber-dk) !important; 
@@ -667,7 +664,7 @@ with tab_flash:
     )
 
     # ── Action row ────────────────────────────────────────────
-    st.markdown('<div class="action-row">', unsafe_allow_html=True)
+    #st.markdown('<div class="action-row">', unsafe_allow_html=True)
     col_toggle, col_draw = st.columns([3, 1])
     with col_toggle:
         mode_choice = st.radio(
