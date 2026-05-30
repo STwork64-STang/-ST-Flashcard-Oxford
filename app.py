@@ -691,6 +691,9 @@ with tab_flash:
     
     st.markdown('</div>', unsafe_allow_html=True)
 
+    cards = st.session_state.get("cards", [])
+    mode  = st.session_state["flash_mode"]
+
     # ── No cards yet ───────────────────────────────────────────
     if not cards:
         st.markdown("""
