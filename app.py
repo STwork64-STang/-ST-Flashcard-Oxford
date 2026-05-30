@@ -688,7 +688,7 @@ with tab_flash:
     # ── Action row ────────────────────────────────────────────
     st.markdown('<div class="action-row">', unsafe_allow_html=True)
 
-    mode_choice = st.button(
+    mode_choice = st.radio(
         "โหมด",
         options=["📖 เรียนรู้", "🎮 ควิซ"],
         index=0 if st.session_state["flash_mode"] == "study" else 1,
