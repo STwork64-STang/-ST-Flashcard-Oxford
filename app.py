@@ -687,11 +687,10 @@ with tab_flash:
 
     # ── Action row ────────────────────────────────────────────
     st.markdown('<div class="action-row">', unsafe_allow_html=True)
-    col_toggle, col_draw = st.columns([8, 1])
-    with col_toggle:
+
         mode_choice = st.radio(
             "โหมด",
-            options=["📖 เรียนรู้        /", "🎮 ควิซ          /"],
+            options=["📖 เรียนรู้", "🎮 ควิซ"],
             index=0 if st.session_state["flash_mode"] == "study" else 1,
             horizontal=True,
             label_visibility="collapsed",
@@ -701,7 +700,7 @@ with tab_flash:
         if new_mode != st.session_state["flash_mode"]:
             st.session_state["flash_mode"] = new_mode
             st.rerun()
-    with col_draw:
+
         if st.button("🎲 สุ่มการ์ดใหม่", use_container_width=True, type="primary"):
             cards_new = pick_cards(st.session_state["user_level"], n_cards)
             st.session_state.update({
