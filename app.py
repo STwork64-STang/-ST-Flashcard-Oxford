@@ -671,7 +671,7 @@ with tab_flash:
     if new_mode != st.session_state["flash_mode"]:
         st.session_state["flash_mode"] = new_mode
         st.rerun()
-    with col_draw:
+    col_draw:
         if st.button("🎲 สุ่มการ์ดใหม่", use_container_width=True, type="primary"):
             cards_new = pick_cards(st.session_state["user_level"], n_cards)
             st.session_state.update({
