@@ -252,17 +252,18 @@ h4 { font-size: 1.25rem !important; font-weight: 600 !important; margin-bottom: 
     box-shadow: none !important;
 }
 
-/* Primary draw button */
+/* Primary draw button — amber so text stays readable */
 .stButton > button[kind="primary"] {
-    background: var(--spine) !important;
-    color: #F5EDD8 !important;
-    border-color: var(--spine) !important;
+    background: var(--amber) !important;
+    color: #241C0E !important;
+    border-color: var(--amber-dk) !important;
+    font-weight: 600 !important;
 }
 .stButton > button[kind="primary"]:hover {
-    background: var(--spine-lt) !important;
+    background: var(--amber-dk) !important;
     color: #FDF4E0 !important;
-    border-color: var(--spine-lt) !important;
-    box-shadow: 0 4px 14px rgba(58,42,22,.28) !important;
+    border-color: var(--amber-dk) !important;
+    box-shadow: 0 4px 14px rgba(160,104,26,.32) !important;
 }
 
 /* ── Selectbox ── */
@@ -571,20 +572,19 @@ with tab_flash:
     # ── No cards yet ───────────────────────────────────────────
     if not cards:
         st.markdown("""
-        <div style="text-align:center;padding:2.5rem 1rem;color:#9E8E72;">
+        <div style="text-align:center;padding:2.5rem 1rem;">
             <div style="font-size:2.5rem;margin-bottom:.75rem;">🎴</div>
             <div style="font-family:'Lora',serif;font-size:1.1rem;color:#6B5C44;margin-bottom:.4rem;">
                 ยังไม่มีการ์ดในเซ็ตนี้
             </div>
-            <div style="font-size:.85rem;">กด <strong>สุ่มการ์ดใหม่</strong> ด้านบนเพื่อเริ่มฝึก</div>
+            <div style="font-size:.85rem;color:#9E8E72;">กด <strong style="color:#6B5C44;">สุ่มการ์ดใหม่</strong> ด้านบนเพื่อเริ่มฝึก</div>
         </div>
         """, unsafe_allow_html=True)
-        st.stop()
 
     # ══════════════════════════════════════════════════════════
     # STUDY MODE
     # ══════════════════════════════════════════════════════════
-    if mode == "study":
+    elif mode == "study":
         st.markdown("#### 👀 ฝึกจำคำศัพท์")
 
         s_idx = st.session_state.get("study_idx", 0)
