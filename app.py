@@ -691,7 +691,7 @@ with tab_flash:
     with col_toggle:
         mode_choice = st.radio(
             "โหมด",
-            options=["📖 เรียนรู้", "🎮 ควิซ"],
+            options=["📖 เรียนรู้        ", "🎮 ควิซ          "],
             index=0 if st.session_state["flash_mode"] == "study" else 1,
             horizontal=True,
             label_visibility="collapsed",
