@@ -328,34 +328,36 @@ h4 { font-size: 1.25rem !important; font-weight: 600 !important; margin-bottom: 
 [role="option"]:hover { background: var(--amber-bg) !important; }
 
 /* ── Radio as segmented control ── */
+/* wrapper: match the height/padding of .stButton > button */
 div[data-testid="stRadio"] {
-    background: var(--page-alt);
-    border: 1.5px solid var(--border);
-    border-radius: 10px;
+    background: var(--page-alt) !important;
+    border: 1.5px solid var(--border) !important;
+    border-radius: var(--radius-sm) !important;
     padding: 4px !important;
-    display: flex;
+    margin-bottom: 0 !important;
+    /* same visual height as button: button has 8px top+bottom pad + font ~1.25rem = ~36px total */
 }
-div[data-testid="stRadio"] > label { display: none; }
-div[data-testid="stRadio"] [data-testid="stRadioGroup"] {
-    display: flex !important;
-    flex-direction: row !important;
-    gap: 3px !important;
-    width: 100%;
-}
-div[data-testid="stRadio"] label[data-testid="stWidgetLabel"] { display: none !important; }
+/* hide the label above */
+div[data-testid="stRadio"] > div:first-child { display: none !important; }
+
+/* radio group row */
 div[data-testid="stRadio"] [role="radiogroup"] {
     display: flex !important;
     flex-direction: row !important;
     gap: 3px !important;
-    width: 100%;
+    width: 100% !important;
+    align-items: stretch !important;
 }
-div[data-testid="stRadio"] [role="radio"] {
-    display: none !important;
-}
+
+/* hide the actual radio dot */
+div[data-testid="stRadio"] input[type="radio"] { display: none !important; }
+
+/* each option label */
 div[data-testid="stRadio"] label {
     flex: 1 !important;
-    padding: 7px 10px !important;
-    border-radius: 7px !important;
+    margin: 0 !important;
+    padding: 6px 10px !important;
+    border-radius: 6px !important;
     border: none !important;
     background: transparent !important;
     color: var(--ink-faint) !important;
@@ -364,26 +366,38 @@ div[data-testid="stRadio"] label {
     font-weight: 500 !important;
     cursor: pointer !important;
     transition: all .18s ease !important;
-    text-align: center !important;
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
-}
-div[data-testid="stRadio"] label:has([aria-checked="true"]),
-div[data-testid="stRadio"] label:has(input:checked) {
-    background: var(--page) !important;
-    color: var(--spine) !important;
-    font-weight: 600 !important;
-    box-shadow: 0 1px 4px rgba(36,28,14,.12), 0 0 0 1px var(--border) !important;
+    gap: 5px !important;
+    white-space: nowrap !important;
+    min-height: 30px !important;
 }
 div[data-testid="stRadio"] label:hover {
     background: var(--amber-bg) !important;
     color: var(--amber-dk) !important;
 }
-/* Hide the radio dot */
+/* selected state */
+div[data-testid="stRadio"] label:has(input:checked) {
+    background: var(--page) !important;
+    color: var(--spine) !important;
+    font-weight: 600 !important;
+    box-shadow: 0 1px 4px rgba(36,28,14,.1), 0 0 0 1px var(--border) !important;
+}
+/* text inside label */
+div[data-testid="stRadio"] label p,
 div[data-testid="stRadio"] [data-testid="stMarkdownContainer"] p {
     font-size: .85rem !important;
     line-height: 1 !important;
+    margin: 0 !important;
+    color: inherit !important;
+}
+
+/* align-items: make radio column same height as adjacent button column */
+.action-row > div[data-testid="stHorizontalBlock"] > div {
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: center !important;
 }
 
 /* ── Section divider ── */
@@ -642,10 +656,9 @@ with tab_flash:
     )
 
     # ── Action row ────────────────────────────────────────────
-    col_toggle, col_draw = st.columns([2, 1])
-
+    st.markdown('<div class="action-row">', unsafe_allow_html=True)
+    col_toggle, col_draw = st.columns([3, 2])
     with col_toggle:
-        # Segmented control — st.radio horizontal
         mode_choice = st.radio(
             "โหมด",
             options=["📖 เรียนรู้", "🎮 ควิซ"],
@@ -658,7 +671,6 @@ with tab_flash:
         if new_mode != st.session_state["flash_mode"]:
             st.session_state["flash_mode"] = new_mode
             st.rerun()
-
     with col_draw:
         if st.button("🎲 สุ่มการ์ดใหม่", use_container_width=True, type="primary"):
             cards_new = pick_cards(st.session_state["user_level"], n_cards)
@@ -672,6 +684,7 @@ with tab_flash:
             if "current_options" in st.session_state:
                 del st.session_state["current_options"]
             st.rerun()
+    st.markdown('</div>', unsafe_allow_html=True)
 
     st.markdown('<div class="section-divider"></div>', unsafe_allow_html=True)
 
@@ -895,21 +908,24 @@ with tab_read:
 
     story = STORIES[sel_idx]
 
-    col_r1, col_r2 = st.columns(2)
-    with col_r1:
-        if st.button("📖 อ่านเรื่อง", use_container_width=True):
-            st.session_state["read_mode"] = "read"
-            st.rerun()
-    with col_r2:
-        if st.button("📝 ทำแบบทดสอบ", use_container_width=True):
-            st.session_state.update({
-                "read_mode":    "quiz",
-                "read_q_idx":   0,
-                "read_score":   0,
-                "read_status":  None,
-                "read_answers": {},
-            })
-            st.rerun()
+    read_choice = st.radio(
+        "โหมดอ่าน",
+        options=["📖 อ่านเรื่อง", "📝 ทำแบบทดสอบ"],
+        index=0 if st.session_state.get("read_mode", "read") == "read" else 1,
+        horizontal=True,
+        label_visibility="collapsed",
+        key="read_mode_radio"
+    )
+    new_read_mode = "read" if "อ่านเรื่อง" in read_choice else "quiz"
+    if new_read_mode != st.session_state.get("read_mode", "read"):
+        st.session_state.update({
+            "read_mode":    new_read_mode,
+            "read_q_idx":   0,
+            "read_score":   0,
+            "read_status":  None,
+            "read_answers": {},
+        })
+        st.rerun()
 
     st.markdown('<div class="section-divider"></div>', unsafe_allow_html=True)
 
